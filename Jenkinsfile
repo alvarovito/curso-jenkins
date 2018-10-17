@@ -21,8 +21,16 @@ pipeline {
     stage('Push Registry') {
       steps {
         echo 'Push Registry'
-        sh 'docker tag app:test app:stable'
-        sh 'docker push app:test app:stable'
+          withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'password', usernameVariable: 'user')]) 
+          {
+            echo 'User: $user'
+            echo 'PASS: $password'
+          }
+          withDockerRegistry([credentialsId: 'dockerhub'])
+          {
+            sh 'docker tag app:test alvarovito/app:stable'
+            sh 'docker push alvarovito/app:stable'
+          }
       }
     }
   }
